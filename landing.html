@@ -3,145 +3,194 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestor Avanzado de Overlays Yolobox</title>
+  <title>7H Film Sport Overlay Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
+      font-family: 'Montserrat', sans-serif;
+      background-color: #000;
+      color: #fff;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       min-height: 100vh;
       margin: 0;
+      padding: 40px 0;
     }
 
     .container {
-      background-color: #fff;
-      padding: 30px 40px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      max-width: 450px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      max-width: 1200px;
       width: 90%;
     }
 
-    h2 {
+    .card {
+      background-color: #111;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+      width: 350px;
       text-align: center;
-      margin-bottom: 25px;
-      color: #0078D4; /* color azul similar a Microsoft */
     }
 
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
+    .card h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 24px;
+      margin-bottom: 15px;
+      color: #00adef;
     }
 
     input {
-      width: 100%;
-      padding: 8px 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      width: 90%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: none;
       font-size: 14px;
     }
 
     button {
-      width: 100%;
-      padding: 10px;
-      background-color: #0078D4;
-      color: #fff;
-      font-size: 16px;
+      background-color: #00adef;
+      color: #000;
+      font-weight: bold;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
+      padding: 10px 20px;
       cursor: pointer;
-      transition: 0.3s;
+      margin-top: 5px;
     }
 
     button:hover {
-      background-color: #005a9e;
+      background-color: #0078a0;
+      color: #fff;
     }
 
-    @media (max-width: 500px) {
-      .container {
-        padding: 20px;
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    header {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header img {
+      width: 30%;
+      max-width: 180px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      margin: 0;
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        width: 90%;
+      }
+      header h1 {
+        font-size: 28px;
       }
     }
   </style>
 </head>
 <body>
+  <header>
+    <img src="assets/logo.png" alt="7H Film Sport Logo">
+    <h1>Overlay Manager</h1>
+  </header>
 
   <div class="container">
-    <h2>Gestor de Overlays Yolobox</h2>
-
-    <div>
-      <label>Overlay Marcador:</label>
-      <input type="text" id="marcador" placeholder="https://tu-overlay-marcador.com">
+    <div class="card">
+      <h2>Marcador</h2>
+      <input type="text" id="marcadorUrl" placeholder="URL Overlay Marcador">
+      <button onclick="updateOverlay('marcador/overlay.txt', 'marcadorUrl', 'statusMarcador')">Actualizar</button>
+      <div class="status" id="statusMarcador">Overlay actual: (sin definir)</div>
     </div>
 
-    <div>
-      <label>Overlay Entretiempo:</label>
-      <input type="text" id="entretiempo" placeholder="https://tu-overlay-entretiempo.com">
+    <div class="card">
+      <h2>Entretiempo</h2>
+      <input type="text" id="entretiempoUrl" placeholder="URL Overlay Entretiempo">
+      <button onclick="updateOverlay('entretiempo/overlay.txt', 'entretiempoUrl', 'statusEntretiempo')">Actualizar</button>
+      <div class="status" id="statusEntretiempo">Overlay actual: (sin definir)</div>
     </div>
 
-    <div>
-      <label>Overlay Versus:</label>
-      <input type="text" id="versus" placeholder="https://tu-overlay-versus.com">
+    <div class="card">
+      <h2>Versus</h2>
+      <input type="text" id="versusUrl" placeholder="URL Overlay Versus">
+      <button onclick="updateOverlay('versus/overlay.txt', 'versusUrl', 'statusVersus')">Actualizar</button>
+      <div class="status" id="statusVersus">Overlay actual: (sin definir)</div>
     </div>
-
-    <div>
-      <label>Token GitHub:</label>
-      <input type="password" id="token" placeholder="Personal Access Token">
-    </div>
-
-    <button onclick="actualizar()">Actualizar en GitHub</button>
   </div>
 
   <script>
-    const user = "7hfilmsport";  // Cambia por tu usuario GitHub
-    const repo = "yolobox";     // Cambia por tu repo
+    const repoOwner = "7hfilmsport";   // Ajusta si es otro user/org
+    const repoName = "yolobox";
+    const branch = "main";
 
-    async function actualizar() {
-      const token = document.getElementById("token").value;
-      const overlays = {
-        "marcador/overlay.txt": document.getElementById("marcador").value,
-        "entretiempo/overlay.txt": document.getElementById("entretiempo").value,
-        "versus/overlay.txt": document.getElementById("versus").value
-      };
+    async function updateOverlay(filePath, inputId, statusId) {
+      const url = document.getElementById(inputId).value;
+      const token = prompt("Introduce tu GitHub Token:");
 
-      for (const path in overlays) {
-        try {
-          const getFile = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${path}`, {
-            headers: { "Authorization": `token ${token}` }
-          });
-          const fileData = await getFile.json();
-          const sha = fileData.sha;
+      if (!url || !token) return;
 
-          const body = {
-            message: `Actualizar overlay ${path}`,
-            content: btoa(overlays[path]),
-            sha: sha
-          };
+      const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
 
-          const res = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${path}`, {
-            method: "PUT",
-            headers: {
-              "Authorization": `token ${token}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(body)
-          });
+      try {
+        // 1) Obtenemos el sha actual del archivo
+        let getResp = await fetch(apiUrl, { headers: { Authorization: `token ${token}` } });
+        let getData = await getResp.json();
+        let sha = getData.sha;
 
-          if (!res.ok) {
-            console.error(`${path} ERROR:`, await res.json());
-          }
-        } catch (e) {
-          console.error(e);
+        // 2) Actualizamos con el nuevo contenido
+        let result = await fetch(apiUrl, {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: `Update ${filePath}`,
+            content: btoa(url),
+            sha: sha,
+            branch: branch
+          })
+        });
+
+        if (result.ok) {
+          document.getElementById(statusId).innerText = "Guardado. Obteniendo título…";
+          let title = await getOverlayTitle(url);
+          document.getElementById(statusId).innerText = `Overlay actual: ${title}`;
+        } else {
+          document.getElementById(statusId).innerText = "Error al guardar en GitHub";
         }
+      } catch (e) {
+        console.error(e);
+        document.getElementById(statusId).innerText = "Error al procesar la solicitud";
       }
-      alert("Actualización completada!");
+    }
+
+    async function getOverlayTitle(url) {
+      try {
+        let resp = await fetch(url);
+        let text = await resp.text();
+        let match = text.match(/<title>(.*?)<\/title>/i);
+        if (match && match[1]) {
+          return match[1].split(" - overlays.uno")[0].trim();
+        }
+      } catch (e) {
+        console.error("No se pudo leer el título:", e);
+      }
+      return "No disponible";
     }
   </script>
-
 </body>
 </html>
