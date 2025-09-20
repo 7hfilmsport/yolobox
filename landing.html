@@ -43,7 +43,7 @@
       gap: 20px;
       flex-wrap: wrap;
       justify-content: center;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
       width: 100%;
       max-width: 1200px;
     }
@@ -79,19 +79,29 @@
       color: #fff;
     }
 
-    #authCode {
-      width: 300px;
+    .token-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .token-section input {
+      width: 100%;
       padding: 14px;
       border-radius: 8px;
       border: 1px solid #555;
       font-size: 16px;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
       background-color: #222;
       color: #fff;
     }
 
-    #updateButton {
-      padding: 14px 30px;
+    .token-section button {
+      width: 100%;
+      padding: 14px;
       border-radius: 8px;
       border: none;
       font-size: 16px;
@@ -99,7 +109,11 @@
       cursor: pointer;
       background-color: #fff;
       color: #000;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+    }
+
+    .token-section button:hover {
+      background-color: #ccc;
     }
 
     .status {
@@ -111,7 +125,7 @@
         flex-direction: column;
         align-items: center;
       }
-      #authCode {
+      .token-section {
         width: 90%;
       }
     }
@@ -130,13 +144,9 @@
         font-size: 18px;
         padding: 14px;
       }
-      #authCode {
+      .token-section input, .token-section button {
         font-size: 18px;
         padding: 16px;
-      }
-      #updateButton {
-        font-size: 18px;
-        padding: 16px 30px;
       }
     }
   </style>
@@ -167,27 +177,32 @@
     </div>
   </div>
 
-  <input type="password" id="authCode" placeholder="Código de autorización">
+  <!-- Zona integrada para cargar títulos -->
+  <div class="token-section">
+    <input type="password" id="viewToken" placeholder="Token para revisar títulos">
+    <button onclick="loadOverlayTitles()">Cargar títulos actuales</button>
+  </div>
 
-  <button id="updateButton" onclick="actualizar()">Actualizar</button>
+  <!-- Zona para actualizar overlays -->
+  <div class="token-section">
+    <input type="password" id="authCode" placeholder="Código de autorización">
+    <button onclick="actualizar()">Actualizar overlays</button>
+  </div>
 
   <script>
     const repoOwner = "7hfilmsport";
     const repoName = "yolobox";
     const branch = "main";
 
-    // Mapea inputs y sus status
     const overlaysMap = {
       marcador: "statusMarcador",
       entretiempo: "statusEntretiempo",
       versus: "statusVersus"
     };
 
-    // Función para leer título del overlay desde GitHub
-    async function fetchOverlayTitle(path) {
+    async function fetchOverlayTitle(path, token) {
       try {
         const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`;
-        const token = document.getElementById("authCode").value;
         const headers = token ? { "Authorization": `token ${token}` } : {};
         const res = await fetch(url, { headers });
         const data = await res.json();
@@ -202,22 +217,17 @@
       return "No disponible";
     }
 
-    // Cargar títulos al iniciar
     async function loadOverlayTitles() {
+      const token = document.getElementById("viewToken").value;
       for (const id in overlaysMap) {
         const statusId = overlaysMap[id];
         const path = `${id}/overlay.txt`;
         document.getElementById(statusId).innerText = "Overlay actual: cargando…";
-        const title = await fetchOverlayTitle(path);
+        const title = await fetchOverlayTitle(path, token);
         document.getElementById(statusId).innerText = `Overlay actual: ${title}`;
       }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      loadOverlayTitles();
-    });
-
-    // Función de actualizar
     async function actualizar() {
       const token = document.getElementById("authCode").value;
       const overlays = {
@@ -252,7 +262,7 @@
 
           if (res.ok) {
             const statusId = overlaysMap[path.split('/')[0]];
-            const title = await getOverlayTitle(overlays[path]);
+            const title = await fetchOverlayTitle(path, token);
             document.getElementById(statusId).innerText = `Overlay actual: ${title}`;
           } else {
             console.error(`${path} ERROR:`, await res.json());
@@ -263,20 +273,6 @@
         }
       }
       alert("Actualización completada!");
-    }
-
-    async function getOverlayTitle(url) {
-      try {
-        let resp = await fetch(url);
-        let text = await resp.text();
-        let match = text.match(/<title>(.*?)<\/title>/i);
-        if (match && match[1]) {
-          return match[1].split(" - overlays.uno")[0].trim();
-        }
-      } catch (e) {
-        console.error("No se pudo leer el título:", e);
-      }
-      return "No disponible";
     }
   </script>
 </body>
