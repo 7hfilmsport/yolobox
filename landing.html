@@ -28,8 +28,8 @@
     }
 
     header img {
-      width: 250px;      /* tamaño base más grande */
-      max-width: 60%;    /* se ajusta en móviles */
+      width: 250px;
+      max-width: 60%;
       height: auto;
       margin-bottom: 10px;
       transition: width 0.3s;
@@ -59,6 +59,9 @@
       text-align: center;
       box-shadow: 0 4px 10px rgba(255,255,255,0.05);
       transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .card:hover {
@@ -69,7 +72,7 @@
     .card h2 {
       font-family: 'Bebas Neue', sans-serif;
       font-size: 22px;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
 
     .card input {
@@ -78,12 +81,12 @@
       border-radius: 6px;
       border: none;
       font-size: 16px;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
       background-color: #222;
       color: #fff;
     }
 
-    #token {
+    #authCode {
       width: 300px;
       padding: 14px;
       border-radius: 8px;
@@ -105,6 +108,7 @@
       background-color: #fff;
       color: #000;
       transition: background 0.3s, color 0.3s;
+      margin-bottom: 30px;
     }
 
     #updateButton:hover {
@@ -113,7 +117,6 @@
     }
 
     .status {
-      margin-top: 10px;
       font-size: 14px;
     }
 
@@ -122,7 +125,7 @@
         flex-direction: column;
         align-items: center;
       }
-      #token {
+      #authCode {
         width: 90%;
       }
     }
@@ -141,7 +144,7 @@
         font-size: 18px;
         padding: 14px;
       }
-      #token {
+      #authCode {
         font-size: 18px;
         padding: 16px;
       }
@@ -178,7 +181,7 @@
     </div>
   </div>
 
-  <input type="password" id="token" placeholder="Token GitHub">
+  <input type="password" id="authCode" placeholder="Código de autorización">
 
   <button id="updateButton" onclick="actualizar()">Actualizar</button>
 
@@ -188,7 +191,7 @@
     const branch = "main";
 
     async function actualizar() {
-      const token = document.getElementById("token").value;
+      const token = document.getElementById("authCode").value;
       const overlays = {
         "marcador/overlay.txt": document.getElementById("marcador").value,
         "entretiempo/overlay.txt": document.getElementById("entretiempo").value,
@@ -251,3 +254,4 @@
   </script>
 </body>
 </html>
+
