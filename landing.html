@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestor Avanzado de Overlays Yolobox</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      max-width: 450px;
+      width: 90%;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #0078D4; /* color azul similar a Microsoft */
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #0078D4;
+      color: #fff;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #005a9e;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Gestor de Overlays Yolobox</h2>
+
+    <div>
+      <label>Overlay Marcador:</label>
+      <input type="text" id="marcador" placeholder="https://tu-overlay-marcador.com">
+    </div>
+
+    <div>
+      <label>Overlay Entretiempo:</label>
+      <input type="text" id="entretiempo" placeholder="https://tu-overlay-entretiempo.com">
+    </div>
+
+    <div>
+      <label>Overlay Versus:</label>
+      <input type="text" id="versus" placeholder="https://tu-overlay-versus.com">
+    </div>
+
+    <div>
+      <label>Token GitHub:</label>
+      <input type="password" id="token" placeholder="Personal Access Token">
+    </div>
+
+    <button onclick="actualizar()">Actualizar en GitHub</button>
+  </div>
+
+  <script>
+    const user = "TUUSUARIO";  // Cambia por tu usuario GitHub
+    const repo = "yolobox";     // Cambia por tu repo
+
+    async function actualizar() {
+      const token = document.getElementById("token").value;
+      const overlays = {
+        "marcador/overlay.txt": document.getElementById("marcador").value,
+        "entretiempo/overlay.txt": document.getElementById("entretiempo").value,
+        "versus/overlay.txt": document.getElementById("versus").value
+      };
+
+      for (const path in overlays) {
+        try {
+          const getFile = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${path}`, {
+            headers: { "Authorization": `token ${token}` }
+          });
+          const fileData = await getFile.json();
+          const sha = fileData.sha;
+
+          const body = {
+            message: `Actualizar overlay ${path}`,
+            content: btoa(overlays[path]),
+            sha: sha
+          };
+
+          const res = await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${path}`, {
+            method: "PUT",
+            headers: {
+              "Authorization": `token ${token}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+          });
+
+          if (!res.ok) {
+            console.error(`${path} ERROR:`, await res.json());
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      alert("Actualización completada!");
+    }
+  </script>
+
+</body>
+</html>
