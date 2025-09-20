@@ -15,7 +15,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
       min-height: 100vh;
     }
 
@@ -23,7 +22,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       margin-bottom: 40px;
     }
 
@@ -32,7 +30,6 @@
       max-width: 60%;
       height: auto;
       margin-bottom: 15px;
-      transition: width 0.3s;
     }
 
     header h1 {
@@ -59,17 +56,10 @@
       width: 250px;
       text-align: center;
       box-shadow: 0 4px 10px rgba(255,255,255,0.05);
-      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
       display: flex;
       flex-direction: column;
       align-items: center;
       margin-bottom: 20px;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(255,255,255,0.15);
-      border-color: #ccc;
     }
 
     .card h2 {
@@ -87,14 +77,6 @@
       margin-bottom: 10px;
       background-color: #222;
       color: #fff;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-      transition: border 0.3s, box-shadow 0.3s;
-    }
-
-    .card input:focus {
-      border-color: #fff;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.7), 0 0 8px rgba(255,255,255,0.2);
-      outline: none;
     }
 
     #authCode {
@@ -106,14 +88,6 @@
       margin-bottom: 30px;
       background-color: #222;
       color: #fff;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-      transition: border 0.3s, box-shadow 0.3s;
-    }
-
-    #authCode:focus {
-      border-color: #fff;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.7), 0 0 8px rgba(255,255,255,0.2);
-      outline: none;
     }
 
     #updateButton {
@@ -125,15 +99,7 @@
       cursor: pointer;
       background-color: #fff;
       color: #000;
-      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
       margin-bottom: 30px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-
-    #updateButton:hover {
-      background-color: #ccc;
-      color: #000;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
     }
 
     .status {
@@ -185,19 +151,19 @@
     <div class="card">
       <h2>Marcador</h2>
       <input type="text" id="marcador" placeholder="URL Overlay Marcador">
-      <div class="status" id="statusMarcador">Overlay actual: (sin definir)</div>
+      <div class="status" id="statusMarcador">Overlay actual: cargando…</div>
     </div>
 
     <div class="card">
       <h2>Entretiempo</h2>
       <input type="text" id="entretiempo" placeholder="URL Overlay Entretiempo">
-      <div class="status" id="statusEntretiempo">Overlay actual: (sin definir)</div>
+      <div class="status" id="statusEntretiempo">Overlay actual: cargando…</div>
     </div>
 
     <div class="card">
       <h2>Versus</h2>
       <input type="text" id="versus" placeholder="URL Overlay Versus">
-      <div class="status" id="statusVersus">Overlay actual: (sin definir)</div>
+      <div class="status" id="statusVersus">Overlay actual: cargando…</div>
     </div>
   </div>
 
@@ -210,6 +176,48 @@
     const repoName = "yolobox";
     const branch = "main";
 
+    // Mapea inputs y sus status
+    const overlaysMap = {
+      marcador: "statusMarcador",
+      entretiempo: "statusEntretiempo",
+      versus: "statusVersus"
+    };
+
+    // Función para leer título del overlay desde GitHub
+    async function fetchOverlayTitle(path) {
+      try {
+        const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`;
+        const token = document.getElementById("authCode").value;
+        const headers = token ? { "Authorization": `token ${token}` } : {};
+        const res = await fetch(url, { headers });
+        const data = await res.json();
+        if (data.content) {
+          const decoded = atob(data.content);
+          const match = decoded.match(/<title>(.*?)<\/title>/i);
+          if (match && match[1]) return match[1].split(" - overlays.uno")[0].trim();
+        }
+      } catch (e) {
+        console.error(`Error leyendo ${path}:`, e);
+      }
+      return "No disponible";
+    }
+
+    // Cargar títulos al iniciar
+    async function loadOverlayTitles() {
+      for (const id in overlaysMap) {
+        const statusId = overlaysMap[id];
+        const path = `${id}/overlay.txt`;
+        document.getElementById(statusId).innerText = "Overlay actual: cargando…";
+        const title = await fetchOverlayTitle(path);
+        document.getElementById(statusId).innerText = `Overlay actual: ${title}`;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadOverlayTitles();
+    });
+
+    // Función de actualizar
     async function actualizar() {
       const token = document.getElementById("authCode").value;
       const overlays = {
@@ -243,9 +251,8 @@
           });
 
           if (res.ok) {
-            const statusId = path.includes("marcador") ? "statusMarcador" :
-                             path.includes("entretiempo") ? "statusEntretiempo" : "statusVersus";
-            let title = await getOverlayTitle(overlays[path]);
+            const statusId = overlaysMap[path.split('/')[0]];
+            const title = await getOverlayTitle(overlays[path]);
             document.getElementById(statusId).innerText = `Overlay actual: ${title}`;
           } else {
             console.error(`${path} ERROR:`, await res.json());
