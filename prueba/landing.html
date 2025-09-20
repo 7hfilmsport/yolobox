@@ -13,7 +13,8 @@
       padding: 40px;
     }
     header img {
-      width: 150px;
+      width: 180px;      /* tamaño ideal */
+      height: auto;      /* mantiene proporción */
       margin-bottom: 20px;
     }
     h1 {
@@ -70,7 +71,7 @@
   </div>
 
   <script>
-    const repoOwner = "7hfilmsport";   // ajusta si es otro user/org
+    const repoOwner = "7hfilmsport";
     const repoName = "yolobox";
     const branch = "main";
 
@@ -83,14 +84,10 @@
       const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
 
       try {
-        // 1) Obtenemos el sha actual del archivo
-        let getResp = await fetch(apiUrl, {
-          headers: { Authorization: `token ${token}` }
-        });
+        let getResp = await fetch(apiUrl, { headers: { Authorization: `token ${token}` } });
         let getData = await getResp.json();
         let sha = getData.sha;
 
-        // 2) Actualizamos con el nuevo contenido
         let result = await fetch(apiUrl, {
           method: "PUT",
           headers: {
@@ -125,7 +122,6 @@
         let match = text.match(/<title>(.*?)<\/title>/i);
         if (match && match[1]) {
           let title = match[1];
-          // Limpiar texto genérico
           return title.split(" - overlays.uno")[0].trim();
         }
       } catch (e) {
