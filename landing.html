@@ -3,80 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>7H Film Sport Overlay Manager</title>
+  <title>Overlays Yolobox</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Montserrat', sans-serif;
       background-color: #000;
       color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
       margin: 0;
-      padding: 40px 0;
-    }
-
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      max-width: 1200px;
-      width: 90%;
-    }
-
-    .card {
-      background-color: #111;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
-      width: 350px;
-      text-align: center;
-    }
-
-    .card h2 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 24px;
-      margin-bottom: 15px;
-      color: #00adef;
-    }
-
-    input {
-      width: 90%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 14px;
-    }
-
-    button {
-      background-color: #00adef;
-      color: #000;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-
-    button:hover {
-      background-color: #0078a0;
-      color: #fff;
-    }
-
-    .status {
-      margin-top: 10px;
-      font-size: 14px;
-    }
-
-    header {
-      width: 100%;
-      text-align: center;
-      margin-bottom: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
     }
 
     header img {
@@ -89,15 +29,91 @@
     header h1 {
       font-family: 'Bebas Neue', sans-serif;
       font-size: 36px;
-      margin: 0;
+      margin-bottom: 30px;
     }
 
-    @media (max-width: 600px) {
-      .card {
+    .overlays-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .card {
+      background-color: #111;
+      padding: 20px;
+      border-radius: 12px;
+      width: 250px;
+      text-align: center;
+    }
+
+    .card h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    .card input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      font-size: 14px;
+      margin-bottom: 5px;
+      background-color: #222;
+      color: #fff;
+    }
+
+    #token {
+      width: 250px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      margin-bottom: 20px;
+      background-color: #222;
+      color: #fff;
+    }
+
+    #updateButton {
+      padding: 12px 25px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: #fff;
+      color: #000;
+    }
+
+    #updateButton:hover {
+      background-color: #ccc;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 800px) {
+      .overlays-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      #token {
         width: 90%;
       }
+    }
+
+    @media (max-width: 500px) {
       header h1 {
         font-size: 28px;
+      }
+      .card {
+        width: 90%;
       }
     }
   </style>
@@ -105,77 +121,84 @@
 <body>
   <header>
     <img src="assets/logo.png" alt="7H Film Sport Logo">
-    <h1>Overlay Manager</h1>
+    <h1>Overlays Yolobox</h1>
   </header>
 
-  <div class="container">
+  <div class="overlays-container">
     <div class="card">
       <h2>Marcador</h2>
-      <input type="text" id="marcadorUrl" placeholder="URL Overlay Marcador">
-      <button onclick="updateOverlay('marcador/overlay.txt', 'marcadorUrl', 'statusMarcador')">Actualizar</button>
+      <input type="text" id="marcador" placeholder="URL Overlay Marcador">
       <div class="status" id="statusMarcador">Overlay actual: (sin definir)</div>
     </div>
 
     <div class="card">
       <h2>Entretiempo</h2>
-      <input type="text" id="entretiempoUrl" placeholder="URL Overlay Entretiempo">
-      <button onclick="updateOverlay('entretiempo/overlay.txt', 'entretiempoUrl', 'statusEntretiempo')">Actualizar</button>
+      <input type="text" id="entretiempo" placeholder="URL Overlay Entretiempo">
       <div class="status" id="statusEntretiempo">Overlay actual: (sin definir)</div>
     </div>
 
     <div class="card">
       <h2>Versus</h2>
-      <input type="text" id="versusUrl" placeholder="URL Overlay Versus">
-      <button onclick="updateOverlay('versus/overlay.txt', 'versusUrl', 'statusVersus')">Actualizar</button>
+      <input type="text" id="versus" placeholder="URL Overlay Versus">
       <div class="status" id="statusVersus">Overlay actual: (sin definir)</div>
     </div>
   </div>
 
+  <input type="password" id="token" placeholder="Token GitHub">
+
+  <button id="updateButton" onclick="actualizar()">Actualizar</button>
+
   <script>
-    const repoOwner = "7hfilmsport";   // Ajusta si es otro user/org
+    const repoOwner = "7hfilmsport";   // Ajusta si es otro usuario/org
     const repoName = "yolobox";
     const branch = "main";
 
-    async function updateOverlay(filePath, inputId, statusId) {
-      const url = document.getElementById(inputId).value;
-      const token = prompt("Introduce tu GitHub Token:");
+    async function actualizar() {
+      const token = document.getElementById("token").value;
+      const overlays = {
+        "marcador/overlay.txt": document.getElementById("marcador").value,
+        "entretiempo/overlay.txt": document.getElementById("entretiempo").value,
+        "versus/overlay.txt": document.getElementById("versus").value
+      };
 
-      if (!url || !token) return;
+      for (const path in overlays) {
+        try {
+          const getFile = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`, {
+            headers: { "Authorization": `token ${token}` }
+          });
+          const fileData = await getFile.json();
+          const sha = fileData.sha;
 
-      const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
-
-      try {
-        // 1) Obtenemos el sha actual del archivo
-        let getResp = await fetch(apiUrl, { headers: { Authorization: `token ${token}` } });
-        let getData = await getResp.json();
-        let sha = getData.sha;
-
-        // 2) Actualizamos con el nuevo contenido
-        let result = await fetch(apiUrl, {
-          method: "PUT",
-          headers: {
-            Authorization: `token ${token}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            message: `Update ${filePath}`,
-            content: btoa(url),
+          const body = {
+            message: `Actualizar overlay ${path}`,
+            content: btoa(overlays[path]),
             sha: sha,
             branch: branch
-          })
-        });
+          };
 
-        if (result.ok) {
-          document.getElementById(statusId).innerText = "Guardado. Obteniendo título…";
-          let title = await getOverlayTitle(url);
-          document.getElementById(statusId).innerText = `Overlay actual: ${title}`;
-        } else {
-          document.getElementById(statusId).innerText = "Error al guardar en GitHub";
+          const res = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`, {
+            method: "PUT",
+            headers: {
+              "Authorization": `token ${token}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+          });
+
+          if (res.ok) {
+            const statusId = path.includes("marcador") ? "statusMarcador" :
+                             path.includes("entretiempo") ? "statusEntretiempo" : "statusVersus";
+            let title = await getOverlayTitle(overlays[path]);
+            document.getElementById(statusId).innerText = `Overlay actual: ${title}`;
+          } else {
+            console.error(`${path} ERROR:`, await res.json());
+          }
+
+        } catch (e) {
+          console.error(e);
         }
-      } catch (e) {
-        console.error(e);
-        document.getElementById(statusId).innerText = "Error al procesar la solicitud";
       }
+      alert("Actualización completada!");
     }
 
     async function getOverlayTitle(url) {
