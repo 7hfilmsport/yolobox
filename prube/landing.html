@@ -57,7 +57,8 @@
 </head>
 <body>
   <header>
-    <img src="LOGOs%207H%20%5B500x500%20px%5D%20Transparente.png" alt="7H Film Sport Logo">
+    <!-- logo desde carpeta assets -->
+    <img src="assets/logo.png" alt="7H Film Sport Logo">
     <h1>Overlay Manager (Prueba Marcador)</h1>
   </header>
 
@@ -117,7 +118,11 @@
         let resp = await fetch(url);
         let text = await resp.text();
         let match = text.match(/<title>(.*?)<\/title>/i);
-        if (match && match[1]) return match[1];
+        if (match && match[1]) {
+          let title = match[1];
+          // limpiar texto genérico si aparece
+          return title.replace(" - overlays.uno Control App Output", "").trim();
+        }
       } catch (e) {
         console.error("No se pudo leer el título:", e);
       }
