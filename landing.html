@@ -15,6 +15,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: flex-start;
       min-height: 100vh;
     }
 
@@ -22,6 +23,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       margin-bottom: 40px;
     }
 
@@ -30,6 +32,7 @@
       max-width: 60%;
       height: auto;
       margin-bottom: 15px;
+      transition: width 0.3s;
     }
 
     header h1 {
@@ -43,7 +46,7 @@
       gap: 20px;
       flex-wrap: wrap;
       justify-content: center;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
       width: 100%;
       max-width: 1200px;
     }
@@ -56,10 +59,17 @@
       width: 250px;
       text-align: center;
       box-shadow: 0 4px 10px rgba(255,255,255,0.05);
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
       display: flex;
       flex-direction: column;
       align-items: center;
       margin-bottom: 20px;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(255,255,255,0.15);
+      border-color: #ccc;
     }
 
     .card h2 {
@@ -77,31 +87,37 @@
       margin-bottom: 10px;
       background-color: #222;
       color: #fff;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+      transition: border 0.3s, box-shadow 0.3s;
     }
 
-    .token-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 20px;
-      width: 100%;
-      max-width: 400px;
+    .card input:focus {
+      border-color: #fff;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.7), 0 0 8px rgba(255,255,255,0.2);
+      outline: none;
     }
 
-    .token-section input {
-      width: 100%;
+    #authCode {
+      width: 300px;
       padding: 14px;
       border-radius: 8px;
       border: 1px solid #555;
       font-size: 16px;
-      margin-bottom: 10px;
+      margin-bottom: 30px;
       background-color: #222;
       color: #fff;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+      transition: border 0.3s, box-shadow 0.3s;
     }
 
-    .token-section button {
-      width: 100%;
-      padding: 14px;
+    #authCode:focus {
+      border-color: #fff;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.7), 0 0 8px rgba(255,255,255,0.2);
+      outline: none;
+    }
+
+    #updateButton {
+      padding: 14px 30px;
       border-radius: 8px;
       border: none;
       font-size: 16px;
@@ -109,11 +125,15 @@
       cursor: pointer;
       background-color: #fff;
       color: #000;
-      margin-bottom: 20px;
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
 
-    .token-section button:hover {
+    #updateButton:hover {
       background-color: #ccc;
+      color: #000;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
     }
 
     .status {
@@ -125,7 +145,7 @@
         flex-direction: column;
         align-items: center;
       }
-      .token-section {
+      #authCode {
         width: 90%;
       }
     }
@@ -144,9 +164,13 @@
         font-size: 18px;
         padding: 14px;
       }
-      .token-section input, .token-section button {
+      #authCode {
         font-size: 18px;
         padding: 16px;
+      }
+      #updateButton {
+        font-size: 18px;
+        padding: 16px 30px;
       }
     }
   </style>
@@ -161,72 +185,30 @@
     <div class="card">
       <h2>Marcador</h2>
       <input type="text" id="marcador" placeholder="URL Overlay Marcador">
-      <div class="status" id="statusMarcador">Overlay actual: cargando…</div>
+      <div class="status" id="statusMarcador">Overlay actual: (sin definir)</div>
     </div>
 
     <div class="card">
       <h2>Entretiempo</h2>
       <input type="text" id="entretiempo" placeholder="URL Overlay Entretiempo">
-      <div class="status" id="statusEntretiempo">Overlay actual: cargando…</div>
+      <div class="status" id="statusEntretiempo">Overlay actual: (sin definir)</div>
     </div>
 
     <div class="card">
       <h2>Versus</h2>
       <input type="text" id="versus" placeholder="URL Overlay Versus">
-      <div class="status" id="statusVersus">Overlay actual: cargando…</div>
+      <div class="status" id="statusVersus">Overlay actual: (sin definir)</div>
     </div>
   </div>
 
-  <!-- Zona integrada para cargar títulos -->
-  <div class="token-section">
-    <input type="password" id="viewToken" placeholder="Token para revisar títulos">
-    <button onclick="loadOverlayTitles()">Cargar títulos actuales</button>
-  </div>
+  <input type="password" id="authCode" placeholder="Código de autorización">
 
-  <!-- Zona para actualizar overlays -->
-  <div class="token-section">
-    <input type="password" id="authCode" placeholder="Código de autorización">
-    <button onclick="actualizar()">Actualizar overlays</button>
-  </div>
+  <button id="updateButton" onclick="actualizar()">Actualizar</button>
 
   <script>
     const repoOwner = "7hfilmsport";
     const repoName = "yolobox";
     const branch = "main";
-
-    const overlaysMap = {
-      marcador: "statusMarcador",
-      entretiempo: "statusEntretiempo",
-      versus: "statusVersus"
-    };
-
-    async function fetchOverlayTitle(path, token) {
-      try {
-        const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${path}`;
-        const headers = token ? { "Authorization": `token ${token}` } : {};
-        const res = await fetch(url, { headers });
-        const data = await res.json();
-        if (data.content) {
-          const decoded = atob(data.content);
-          const match = decoded.match(/<title>(.*?)<\/title>/i);
-          if (match && match[1]) return match[1].split(" - overlays.uno")[0].trim();
-        }
-      } catch (e) {
-        console.error(`Error leyendo ${path}:`, e);
-      }
-      return "No disponible";
-    }
-
-    async function loadOverlayTitles() {
-      const token = document.getElementById("viewToken").value;
-      for (const id in overlaysMap) {
-        const statusId = overlaysMap[id];
-        const path = `${id}/overlay.txt`;
-        document.getElementById(statusId).innerText = "Overlay actual: cargando…";
-        const title = await fetchOverlayTitle(path, token);
-        document.getElementById(statusId).innerText = `Overlay actual: ${title}`;
-      }
-    }
 
     async function actualizar() {
       const token = document.getElementById("authCode").value;
@@ -261,8 +243,9 @@
           });
 
           if (res.ok) {
-            const statusId = overlaysMap[path.split('/')[0]];
-            const title = await fetchOverlayTitle(path, token);
+            const statusId = path.includes("marcador") ? "statusMarcador" :
+                             path.includes("entretiempo") ? "statusEntretiempo" : "statusVersus";
+            let title = await getOverlayTitle(overlays[path]);
             document.getElementById(statusId).innerText = `Overlay actual: ${title}`;
           } else {
             console.error(`${path} ERROR:`, await res.json());
@@ -273,6 +256,20 @@
         }
       }
       alert("Actualización completada!");
+    }
+
+    async function getOverlayTitle(url) {
+      try {
+        let resp = await fetch(url);
+        let text = await resp.text();
+        let match = text.match(/<title>(.*?)<\/title>/i);
+        if (match && match[1]) {
+          return match[1].split(" - overlays.uno")[0].trim();
+        }
+      } catch (e) {
+        console.error("No se pudo leer el título:", e);
+      }
+      return "No disponible";
     }
   </script>
 </body>
