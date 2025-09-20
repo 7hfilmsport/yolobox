@@ -24,6 +24,7 @@
       max-width: 180px;
       height: auto;
       margin-bottom: 10px;
+      transition: width 0.3s;
     }
 
     header h1 {
@@ -48,6 +49,13 @@
       border-radius: 12px;
       width: 250px;
       text-align: center;
+      box-shadow: 0 4px 10px rgba(255,255,255,0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(255,255,255,0.15);
     }
 
     .card h2 {
@@ -58,28 +66,29 @@
 
     .card input {
       width: 100%;
-      padding: 8px;
+      padding: 12px;
       border-radius: 6px;
       border: none;
-      font-size: 14px;
+      font-size: 16px;
       margin-bottom: 5px;
       background-color: #222;
       color: #fff;
     }
 
     #token {
-      width: 250px;
-      padding: 10px;
+      width: 300px;
+      padding: 14px;
       border-radius: 8px;
       border: none;
-      font-size: 14px;
+      font-size: 16px;
       margin-bottom: 20px;
       background-color: #222;
       color: #fff;
+      transition: width 0.3s, font-size 0.3s, padding 0.3s;
     }
 
     #updateButton {
-      padding: 12px 25px;
+      padding: 14px 30px;
       border-radius: 8px;
       border: none;
       font-size: 16px;
@@ -87,10 +96,12 @@
       cursor: pointer;
       background-color: #fff;
       color: #000;
+      transition: background 0.3s, color 0.3s;
     }
 
     #updateButton:hover {
       background-color: #ccc;
+      color: #000;
     }
 
     .status {
@@ -112,8 +123,23 @@
       header h1 {
         font-size: 28px;
       }
+      header img {
+        width: 50%;
+      }
       .card {
         width: 90%;
+      }
+      .card input {
+        font-size: 18px;
+        padding: 14px;
+      }
+      #token {
+        font-size: 18px;
+        padding: 16px;
+      }
+      #updateButton {
+        font-size: 18px;
+        padding: 16px 30px;
       }
     }
   </style>
@@ -149,7 +175,7 @@
   <button id="updateButton" onclick="actualizar()">Actualizar</button>
 
   <script>
-    const repoOwner = "7hfilmsport";   // Ajusta si es otro usuario/org
+    const repoOwner = "7hfilmsport";
     const repoName = "yolobox";
     const branch = "main";
 
